@@ -1,5 +1,4 @@
 import { UF } from './lib/unionFind';
+import { run as runFindLucky } from './leetcode/p1394';
 
-const uf = new UF(10);
-
-console.log('uf.count', uf.getCount());
+runFindLucky();
