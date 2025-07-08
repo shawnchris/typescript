@@ -22,7 +22,7 @@
 //     events[i].length == 2
 //     1 <= startDayi <= endDayi <= 10^5
 
-import { MinPriorityQueue } from '@datastructures-js/priority-queue';
+import { ICompare, MinPriorityQueue, PriorityQueue } from "@datastructures-js/priority-queue";
 
 function maxEvents(events: number[][]): number {
     const n = events.length;
@@ -33,12 +33,12 @@ function maxEvents(events: number[][]): number {
     events.sort((a, b) => a[0] - b[0]);
     const pq = new MinPriorityQueue<number>();
     let ans = 0;
-    for (let i = 1, j = 0; i <= maxDay; i++) {
-        while (j < n && events[j][0] <= i) {
-            pq.enqueue(events[j][1]);
-            j++;
+    for (let day = 1, event = 0; day <= maxDay; day++) {
+        while (event < n && events[event][0] <= day) {
+            pq.enqueue(events[event][1]);
+            event++;
         }
-        while (!pq.isEmpty() && pq.front() < i) {
+        while (!pq.isEmpty() && pq.front() < day) {
             pq.dequeue();
         }
         if (!pq.isEmpty()) {
@@ -47,6 +47,48 @@ function maxEvents(events: number[][]): number {
         }
     }
     return ans;
+}
+
+function maxEventsTle(events: number[][]): number {
+  interface ICar {
+    year: number;
+    price: number;
+  }
+
+  const compareCars: ICompare<ICar> = (a: ICar, b: ICar) => {
+    if (a.year > b.year) {
+      return -1;
+    }
+    if (a.year < b.year) {
+      // prioritize newest cars
+      return 1;
+    }
+    // with lowest price
+    return a.price < b.price ? -1 : 1;
+  };
+
+  const carsQueue = new PriorityQueue<ICar>(compareCars);
+  
+  const pq = new PriorityQueue<number[]>((a: number[], b: number[]) =>
+    a[0] === b[0] ? a[1] - b[1] : a[0] - b[0]
+  );
+
+  for (const event of events) {
+    pq.enqueue(event);
+  }
+
+  let count = 0;
+  while (pq.size() > 0) {
+    const [start, end] = pq.dequeue()!;
+    count++; // Attend this event
+    while (pq.size() > 0 && pq.front()[0] === start) {
+      const nextEvent = pq.dequeue()!;
+      if (nextEvent[1] > start) {
+        pq.enqueue([nextEvent[0] + 1, nextEvent[1]]);
+      }
+    }
+  }
+  return count; // Return the total count of attended events
 }
 
 export function run() {
