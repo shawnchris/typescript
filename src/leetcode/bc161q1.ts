@@ -1,0 +1,74 @@
+// Split Array by Prime Indices
+
+// You are given an integer array nums.
+// Split nums into two arrays A and B using the following rule:
+//     Elements at prime indices in nums must go into array A.
+//     All other elements must go into array B.
+// Return the absolute difference between the sums of the two arrays: |sum(A) - sum(B)|.
+// A prime number is a natural number greater than 1 with only two factors, 1 and itself.
+// Note: An empty array has a sum of 0.
+
+// Example 1:
+// Input: nums = [2,3,4]
+// Output: 1
+// Explanation:
+//     The only prime index in the array is 2, so nums[2] = 4 is placed in array A.
+//     The remaining elements, nums[0] = 2 and nums[1] = 3 are placed in array B.
+//     sum(A) = 4, sum(B) = 2 + 3 = 5.
+//     The absolute difference is |4 - 5| = 1.
+
+// Example 2:
+// Input: nums = [-1,5,7,0]
+// Output: 3
+// Explanation:
+//     The prime indices in the array are 2 and 3, so nums[2] = 7 and nums[3] = 0 are placed in array A.
+//     The remaining elements, nums[0] = -1 and nums[1] = 5 are placed in array B.
+//     sum(A) = 7 + 0 = 7, sum(B) = -1 + 5 = 4.
+//     The absolute difference is |7 - 4| = 3.
+
+// Constraints:
+//     1 <= nums.length <= 10^5
+//     -10^9 <= nums[i] <= 10^9
+
+
+/**
+ * Splits an array by prime indices and returns the absolute difference of the sums.
+ *
+ * @param nums The input array of integers.
+ * @returns The absolute difference between the sum of elements at prime indices and
+ * the sum of elements at non-prime indices.
+ */
+function splitArray(nums: number[]): number {
+    const n = nums.length;
+    if (n === 0) {
+        return 0;
+    }
+
+    const isPrime = sieveOfEratosthenes(n);
+
+    let running = 0;
+    for (let i = 0; i < n; i++) {
+        if (isPrime[i]) {
+            running += nums[i];
+        } else {
+            running -= nums[i];
+        }
+    }
+
+    return Math.abs(running);
+}
+
+function sieveOfEratosthenes(n: number): boolean[] {
+    const isPrime = new Array(n).fill(true);
+    isPrime[0] = false; // 0 is not a prime number
+    isPrime[1] = false; // 1 is not a prime number
+
+    for (let p = 2; p * p < n; p++) {
+        if (isPrime[p]) {
+            for (let i = p * p; i < n; i += p) {
+                isPrime[i] = false;
+            }
+        }
+    }
+    return isPrime;
+}
