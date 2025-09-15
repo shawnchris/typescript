@@ -1,3 +1,3 @@
-import {run} from './leetcode/c460q3';
+import {run} from './leetcode/p1935';
 
 run();
