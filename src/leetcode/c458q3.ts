@@ -52,53 +52,53 @@
 //     0 <= k <= 10^15
 //     The length of result after processing s will not exceed 10^15.
 
-function processStr(s: string, k: number): string {
-    const kb: bigint = BigInt(k);
-    const h: bigint[] = [];
-    let len: bigint = BigInt(0);
+// function processStr(s: string, k: number): string {
+//     const kb: bigint = BigInt(k);
+//     const h: bigint[] = [];
+//     let len: bigint = BigInt(0);
 
-    for (const c of s) {
-        if (c >= 'a' && c <= 'z') {
-            len++;
-        } else if (c === '*') {
-            if (len > 0n) {
-                len--;
-            }
-        } else if (c === '#') {
-            len *= 2n;
-        }
-        h.push(len);
-    }
-    const fl = h.length > 0 ? h[h.length - 1] : 0n;
-    if (k >= fl) {
-        return '.';
-    }
-    let ck: bigint = BigInt(k);
+//     for (const c of s) {
+//         if (c >= 'a' && c <= 'z') {
+//             len++;
+//         } else if (c === '*') {
+//             if (len > 0n) {
+//                 len--;
+//             }
+//         } else if (c === '#') {
+//             len *= 2n;
+//         }
+//         h.push(len);
+//     }
+//     const fl = h.length > 0 ? h[h.length - 1] : 0n;
+//     if (k >= fl) {
+//         return '.';
+//     }
+//     let ck: bigint = BigInt(k);
 
-    for (let i = s.length - 1; i >= 0; i--) {
-        const op = s[i];
-        const cl = h[i];
-        const prevLen = i > 0 ? h[i - 1] : 0n;
+//     for (let i = s.length - 1; i >= 0; i--) {
+//         const op = s[i];
+//         const cl = h[i];
+//         const prevLen = i > 0 ? h[i - 1] : 0n;
 
-        if (op >= 'a' && op <= 'z') {
-            if (ck === prevLen) {
-                return op;
-            }
-        } else if (op === '#') {
-            if (prevLen > 0) {
-                 ck %= prevLen;
-            }
-        } else if (op === '%') {
-            ck = cl - 1n - ck;
-        }
-    }
+//         if (op >= 'a' && op <= 'z') {
+//             if (ck === prevLen) {
+//                 return op;
+//             }
+//         } else if (op === '#') {
+//             if (prevLen > 0) {
+//                  ck %= prevLen;
+//             }
+//         } else if (op === '%') {
+//             ck = cl - 1n - ck;
+//         }
+//     }
 
-    return '.';
-}
+//     return '.';
+// }
 
-export function run() {
-    console.log(processStr("a#b%*", 1)); // Output: "a"
-    console.log(processStr("cd%#*#", 3)); // Output: "d"
-    console.log(processStr("z*#", 0));   // Output: "."
-    console.log(processStr("##zly#f###a#hl#qw%#h#g#x##%vd*e#xgig##%fsr###n#*##%#bg#vw#vn", 2306)); // Output: "c"
-}
+// export function run() {
+//     console.log(processStr("a#b%*", 1)); // Output: "a"
+//     console.log(processStr("cd%#*#", 3)); // Output: "d"
+//     console.log(processStr("z*#", 0));   // Output: "."
+//     console.log(processStr("##zly#f###a#hl#qw%#h#g#x##%vd*e#xgig##%fsr###n#*##%#bg#vw#vn", 2306)); // Output: "c"
+// }

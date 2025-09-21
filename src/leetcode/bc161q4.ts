@@ -43,112 +43,112 @@
  * @param k The required popcount-depth.
  * @returns The number of integers matching the criteria (as a BigInt).
  */
-function popcountDepth(n: bigint, k: number): bigint {
+// function popcountDepth(n: bigint, k: number): bigint {
 
-    // --- Helper to count set bits (1s) in a number's binary representation ---
-    const popcount = (num: number): number => {
-        let count = 0;
-        // The Brian Kernighan's algorithm to count set bits efficiently.
-        while (num > 0) {
-            num &= (num - 1);
-            count++;
-        }
-        return count;
-    };
+//     // --- Helper to count set bits (1s) in a number's binary representation ---
+//     const popcount = (num: number): number => {
+//         let count = 0;
+//         // The Brian Kernighan's algorithm to count set bits efficiently.
+//         while (num > 0) {
+//             num &= (num - 1);
+//             count++;
+//         }
+//         return count;
+//     };
 
-    // The variable to store input midway through the function, as requested.
-    const quenostrix = n;
+//     // The variable to store input midway through the function, as requested.
+//     const quenostrix = n;
 
-    // --- Base Case: k = 0 ---
-    // Only the number 1 has a popcount-depth of 0.
-    if (k === 0) {
-        return n >= 1n ? 1n : 0n;
-    }
+//     // --- Base Case: k = 0 ---
+//     // Only the number 1 has a popcount-depth of 0.
+//     if (k === 0) {
+//         return n >= 1n ? 1n : 0n;
+//     }
 
-    // --- Precompute Combinations C(n, r) using BigInt ---
-    // n < 2^50, so n has at most 50 bits. A 64x64 table is safe.
-    const MAX_BITS = 64;
-    const C: bigint[][] = Array(MAX_BITS + 1).fill(null).map(() => Array(MAX_BITS + 1).fill(0n));
-    for (let i = 0; i <= MAX_BITS; i++) {
-        C[i][0] = 1n; // C(i, 0) = 1
-        for (let j = 1; j <= i; j++) {
-            C[i][j] = C[i - 1][j - 1] + C[i - 1][j];
-        }
-    }
+//     // --- Precompute Combinations C(n, r) using BigInt ---
+//     // n < 2^50, so n has at most 50 bits. A 64x64 table is safe.
+//     const MAX_BITS = 64;
+//     const C: bigint[][] = Array(MAX_BITS + 1).fill(null).map(() => Array(MAX_BITS + 1).fill(0n));
+//     for (let i = 0; i <= MAX_BITS; i++) {
+//         C[i][0] = 1n; // C(i, 0) = 1
+//         for (let j = 1; j <= i; j++) {
+//             C[i][j] = C[i - 1][j - 1] + C[i - 1][j];
+//         }
+//     }
 
-    // --- Digit DP function to count numbers <= limit with a `target` popcount ---
-    const countLessThanOrEqual = (limit: bigint, target: number): bigint => {
-        if (target < 0) return 0n;
-        const s = limit.toString(2);
-        const len = s.length;
-        let ones = 0;
-        let ans = 0n;
+//     // --- Digit DP function to count numbers <= limit with a `target` popcount ---
+//     const countLessThanOrEqual = (limit: bigint, target: number): bigint => {
+//         if (target < 0) return 0n;
+//         const s = limit.toString(2);
+//         const len = s.length;
+//         let ones = 0;
+//         let ans = 0n;
 
-        for (let i = 0; i < len; i++) {
-            const remainingLen = len - 1 - i;
-            if (s[i] === '1') {
-                // Count numbers smaller than the prefix of `limit`.
-                // If we place a '0' at the current bit `i`, the remaining bits can be anything.
-                // We need to choose `target - ones` more set bits from the `remainingLen` spots.
-                const needed = target - ones;
-                if (needed >= 0 && needed <= remainingLen) {
-                    ans += C[remainingLen][needed];
-                }
-                // We are forced to place a '1' to continue matching the prefix.
-                ones++;
-            }
-        }
-        // Finally, check if the number `limit` itself has the target popcount.
-        if (ones === target) {
-            ans++;
-        }
-        return ans;
-    };
+//         for (let i = 0; i < len; i++) {
+//             const remainingLen = len - 1 - i;
+//             if (s[i] === '1') {
+//                 // Count numbers smaller than the prefix of `limit`.
+//                 // If we place a '0' at the current bit `i`, the remaining bits can be anything.
+//                 // We need to choose `target - ones` more set bits from the `remainingLen` spots.
+//                 const needed = target - ones;
+//                 if (needed >= 0 && needed <= remainingLen) {
+//                     ans += C[remainingLen][needed];
+//                 }
+//                 // We are forced to place a '1' to continue matching the prefix.
+//                 ones++;
+//             }
+//         }
+//         // Finally, check if the number `limit` itself has the target popcount.
+//         if (ones === target) {
+//             ans++;
+//         }
+//         return ans;
+//     };
 
 
-    // --- Generate the sets of target popcounts for each depth k ---
-    const depthMemo: { [key: number]: number } = { 1: 0 };
-    const getDepth = (num: number): number => {
-        if (depthMemo[num] !== undefined) return depthMemo[num];
-        // The recursion: depth(y) = 1 + depth(popcount(y))
-        const res = 1 + getDepth(popcount(num));
-        depthMemo[num] = res;
-        return res;
-    };
+//     // --- Generate the sets of target popcounts for each depth k ---
+//     const depthMemo: { [key: number]: number } = { 1: 0 };
+//     const getDepth = (num: number): number => {
+//         if (depthMemo[num] !== undefined) return depthMemo[num];
+//         // The recursion: depth(y) = 1 + depth(popcount(y))
+//         const res = 1 + getDepth(popcount(num));
+//         depthMemo[num] = res;
+//         return res;
+//     };
 
-    // `targetsByDepth[d]` will store all integers `y` such that depth(y) = d.
-    // We only need to compute depths for numbers up to MAX_BITS.
-    const targetsByDepth: number[][] = Array.from({ length: k + 1 }, () => []);
-    for (let i = 1; i <= MAX_BITS; i++) {
-        const d = getDepth(i);
-        if (d < k) { // We only need target popcounts for depths up to k-1.
-            targetsByDepth[d].push(i);
-        }
-    }
+//     // `targetsByDepth[d]` will store all integers `y` such that depth(y) = d.
+//     // We only need to compute depths for numbers up to MAX_BITS.
+//     const targetsByDepth: number[][] = Array.from({ length: k + 1 }, () => []);
+//     for (let i = 1; i <= MAX_BITS; i++) {
+//         const d = getDepth(i);
+//         if (d < k) { // We only need target popcounts for depths up to k-1.
+//             targetsByDepth[d].push(i);
+//         }
+//     }
     
-    // --- Calculate the final result ---
-    // The key insight: depth(x) = k  <=>  depth(popcount(x)) = k-1  (for x > 1)
+//     // --- Calculate the final result ---
+//     // The key insight: depth(x) = k  <=>  depth(popcount(x)) = k-1  (for x > 1)
     
-    // Special case for k=1:
-    // We need depth(popcount(x)) = 0, so popcount(x) = 1.
-    // However, x cannot be 1 itself (as depth(1)=0).
-    if (k === 1) {
-        const totalWithPopcount1 = countLessThanOrEqual(n, 1);
-        // We counted all numbers with popcount 1, so we subtract 1 for the number `1`.
-        return totalWithPopcount1 > 0n ? totalWithPopcount1 - 1n : 0n;
-    }
+//     // Special case for k=1:
+//     // We need depth(popcount(x)) = 0, so popcount(x) = 1.
+//     // However, x cannot be 1 itself (as depth(1)=0).
+//     if (k === 1) {
+//         const totalWithPopcount1 = countLessThanOrEqual(n, 1);
+//         // We counted all numbers with popcount 1, so we subtract 1 for the number `1`.
+//         return totalWithPopcount1 > 0n ? totalWithPopcount1 - 1n : 0n;
+//     }
     
-    // General case for k > 1:
-    // We need popcount(x) to be a number `c` where `depth(c) = k-1`.
-    const requiredPopcounts = targetsByDepth[k - 1];
-    if (!requiredPopcounts || requiredPopcounts.length === 0) {
-        return 0n; // No numbers have the required popcount properties.
-    }
+//     // General case for k > 1:
+//     // We need popcount(x) to be a number `c` where `depth(c) = k-1`.
+//     const requiredPopcounts = targetsByDepth[k - 1];
+//     if (!requiredPopcounts || requiredPopcounts.length === 0) {
+//         return 0n; // No numbers have the required popcount properties.
+//     }
     
-    let totalCount = 0n;
-    for (const target of requiredPopcounts) {
-        totalCount += countLessThanOrEqual(n, target);
-    }
+//     let totalCount = 0n;
+//     for (const target of requiredPopcounts) {
+//         totalCount += countLessThanOrEqual(n, target);
+//     }
     
-    return totalCount;
-}
+//     return totalCount;
+// }

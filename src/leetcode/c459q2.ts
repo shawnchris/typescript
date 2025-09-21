@@ -33,58 +33,58 @@
  * @param {number[][]} points An array of points, where points[i] = [xi, yi].
  * @returns {number} The number of unique horizontal trapezoids, modulo 10^9 + 7.
  */
-function countTrapezoids(points: number[][]): number {
-    // The modulo constant
-    const MOD = 1_000_000_007;
-    const MOD_BIGINT = BigInt(MOD);
+// function countTrapezoids(points: number[][]): number {
+//     // The modulo constant
+//     const MOD = 1_000_000_007;
+//     const MOD_BIGINT = BigInt(MOD);
 
-    // 1. Group points by their y-coordinate and count them.
-    const yCounts = new Map<number, number>();
-    for (const point of points) {
-        const y = point[1];
-        yCounts.set(y, (yCounts.get(y) || 0) + 1);
-    }
+//     // 1. Group points by their y-coordinate and count them.
+//     const yCounts = new Map<number, number>();
+//     for (const point of points) {
+//         const y = point[1];
+//         yCounts.set(y, (yCounts.get(y) || 0) + 1);
+//     }
 
-    // 2. We use the formula: Total = (1/2) * [ (Sum(C_i))^2 - Sum(C_i^2) ],
-    // where C_i is the number of pairs of points on the i-th horizontal line.
-    // Let s1 = Sum(C_i) and s2 = Sum(C_i^2).
-    let s1 = 0n; // This will store Sum(C_i) mod M
-    let s2 = 0n; // This will store Sum(C_i^2) mod M
+//     // 2. We use the formula: Total = (1/2) * [ (Sum(C_i))^2 - Sum(C_i^2) ],
+//     // where C_i is the number of pairs of points on the i-th horizontal line.
+//     // Let s1 = Sum(C_i) and s2 = Sum(C_i^2).
+//     let s1 = 0n; // This will store Sum(C_i) mod M
+//     let s2 = 0n; // This will store Sum(C_i^2) mod M
 
-    for (const count of yCounts.values()) {
-        // We need at least 2 points on a line to form a side.
-        if (count < 2) {
-            continue;
-        }
+//     for (const count of yCounts.values()) {
+//         // We need at least 2 points on a line to form a side.
+//         if (count < 2) {
+//             continue;
+//         }
 
-        const n = BigInt(count);
-        // C_i = nC2 = n * (n - 1) / 2
-        const c = n * (n - 1n) / 2n;
+//         const n = BigInt(count);
+//         // C_i = nC2 = n * (n - 1) / 2
+//         const c = n * (n - 1n) / 2n;
         
-        // Take modulo to keep numbers within a manageable range.
-        const c_mod = c % MOD_BIGINT;
+//         // Take modulo to keep numbers within a manageable range.
+//         const c_mod = c % MOD_BIGINT;
 
-        // Update s1 = (s1 + C_i) mod M
-        s1 = (s1 + c_mod) % MOD_BIGINT;
+//         // Update s1 = (s1 + C_i) mod M
+//         s1 = (s1 + c_mod) % MOD_BIGINT;
 
-        // Update s2 = (s2 + C_i^2) mod M
-        const c_sq_mod = (c_mod * c_mod) % MOD_BIGINT;
-        s2 = (s2 + c_sq_mod) % MOD_BIGINT;
-    }
+//         // Update s2 = (s2 + C_i^2) mod M
+//         const c_sq_mod = (c_mod * c_mod) % MOD_BIGINT;
+//         s2 = (s2 + c_sq_mod) % MOD_BIGINT;
+//     }
 
-    // 3. Calculate the final result using modular arithmetic.
+//     // 3. Calculate the final result using modular arithmetic.
     
-    // Calculate (s1^2) mod M
-    const s1_sq = (s1 * s1) % MOD_BIGINT;
+//     // Calculate (s1^2) mod M
+//     const s1_sq = (s1 * s1) % MOD_BIGINT;
 
-    // Calculate (s1^2 - s2) mod M. Add MOD_BIGINT to ensure the result is non-negative.
-    const numerator = (s1_sq - s2 + MOD_BIGINT) % MOD_BIGINT;
+//     // Calculate (s1^2 - s2) mod M. Add MOD_BIGINT to ensure the result is non-negative.
+//     const numerator = (s1_sq - s2 + MOD_BIGINT) % MOD_BIGINT;
 
-    // Division by 2 in modular arithmetic is multiplication by the modular inverse of 2.
-    // The modular inverse of 2 for M = 10^9 + 7 is (M+1)/2 = 500000004.
-    const inv2 = 500000004n;
+//     // Division by 2 in modular arithmetic is multiplication by the modular inverse of 2.
+//     // The modular inverse of 2 for M = 10^9 + 7 is (M+1)/2 = 500000004.
+//     const inv2 = 500000004n;
     
-    const result = (numerator * inv2) % MOD_BIGINT;
+//     const result = (numerator * inv2) % MOD_BIGINT;
 
-    return Number(result);
-}
+//     return Number(result);
+// }
